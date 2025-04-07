@@ -4,6 +4,7 @@ import Categories from "./Getdata/Categories";
 import logo from "../assets/pokeball.png";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min"; // 🔥 Importa Bootstrap JS
+import CartWidget from "./CardWidget";
 
 const Navbar = ({ cartCount }) => {
   return (
@@ -85,6 +86,7 @@ const Navbar = ({ cartCount }) => {
             <li className="nav-item">
               <NavLink className="nav-link" to="/Carrito">
                 🛒 {cartCount > 0 && <span className="badge bg-primary">{cartCount}</span>}
+                <CartWidget/>
               </NavLink>
             </li>
           </ul>

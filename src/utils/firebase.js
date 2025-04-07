@@ -1,11 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
-console.log("🧪 firebase.js ejecutado");
-console.log("🧪 firebase.js ejecutado");
-console.log("🧪 firebase.js ejecutado");
-console.log("🧪 firebase.js ejecutado");
-console.log("🧪 firebase.js ejecutado");
+
 
 
 const firebaseConfig = {

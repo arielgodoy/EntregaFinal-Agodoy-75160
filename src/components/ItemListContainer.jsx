@@ -1,4 +1,4 @@
-import { Upload } from "lucide-react";
+//import { Upload } from "lucide-react";
 import Productos from "./Getdata/Productos";
 import UploadButton from "./uploaditems";
 import FirestoreCheck from "./FirestoreCheck";

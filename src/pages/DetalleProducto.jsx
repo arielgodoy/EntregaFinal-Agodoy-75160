@@ -1,65 +1,97 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useParams } from "react-router-dom";
+import CartContext from "../contexts/CartContext";
+import { Button, Row, Col, Card } from "react-bootstrap";
+
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "../utils/firebase"; // Ajusta esta ruta según donde inicialices tu Firestore
+import SpinnerModal from "../components/SpinnerModal";
 
 
-import AddToCartButton from "../components/AddToCartButton";
+
+
 
 const DetalleProducto = () => {
+  const { agregarAlCarrito } = useContext(CartContext);
 
+  const [cantidad, setCantidad] = useState(1);
   const [detail, setDetail] = useState();
-
   const { productid } = useParams();
 
-  useEffect(() => {
-    const url = `https://fakestoreapi.com/products/${productid}`;
-    fetch(url)
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        setDetail(data);
-      });
-  }, [productid]);
+  const handleRestar = () => {
+    cantidad > 1 && setCantidad(cantidad - 1);
+    console.log(cantidad);
+  };
 
+  const handleSumar = () => {    
+    setCantidad(cantidad + 1);
+    console.log(cantidad);
+  };
+
+  const handleAgregar = () => {
+    agregarAlCarrito(detail, cantidad);
+  };
+
+  useEffect(() => {
+    const fetchProductDetailFromFirestore = async () => {
+      try {       
+        
+        const itemsCollection = collection(db, 'items');
+        const productQuery = query(itemsCollection, where('id', '==', parseInt(productid)));
+        const querySnapshot = await getDocs(productQuery);
   
+        if (querySnapshot.size === 1) {
+          // Si hay exactamente un documento que coincide con el ID
+          const productDocSnapshot = querySnapshot.docs[0];
+          setDetail({ id: productDocSnapshot.id, ...productDocSnapshot.data() });
+        } else {
+          console.error('El producto no existe en Firestore o hay duplicados.');
+        }
+      } catch (error) {
+        console.error('Error al obtener los datos desde Firestore:', error);
+      }
+    };
+  
+    fetchProductDetailFromFirestore();
+  }, [productid]);
 
   if (!detail)
     return (
-      <div className="d-flex justify-content-center mt-5">
-        <div className="spinner-border text-primary" role="status" style={{ width: "5rem", height: "5rem", borderWidth: "5px" }}>
-          <span className="visually-hidden">Cargando...</span>
-        </div>
-      </div>
+      <>
+        <SpinnerModal />
+      </>
     );
-
   return (
-    <>
+    <div className="d-flex justify-content-center">
+      <Card style={{ width: "18rem" }}>
+      <Card.Body>
+  <Card.Img variant="top" src={detail.image} />
+  <Card.Title>{detail.title}</Card.Title>
+  <Card.Text>{detail.description}</Card.Text>
+  <h3 className="card-text">Precio: ${detail.price.toFixed(2)}</h3>
+  
+  <Row className="justify-content-center align-items-center">
+    <Col>
+      <Button onClick={handleRestar} variant="danger" size="sm">-</Button>
+    </Col>
+    <Col>
+      <h3>{cantidad}</h3>
+    </Col>
+    <Col>
+      <Button onClick={handleSumar} variant="success" size="sm">+</Button>
+    </Col>
+  </Row>
+
+  <Row>
+    <Button onClick={handleAgregar} variant="primary" size="md">
+      Agregar al carrito
+    </Button>
+  </Row>
+</Card.Body>
+
       
-        <div className="container text-center">
-          <div className="row">
-            <div className="col-md-3 mx-auto">
-              <div className="card">
-                <h1 className="card-title">{detail.title}</h1>
-                <p className="card-text">{detail.description}</p>
-                <img
-                  src={detail.image}
-                  className="card-img-top img-fluid img-sm"
-                  alt={detail.title}
-                  style={{ maxWidth: "200px" }}
-                />
-                <div className="card-body">
-                  <h5 className="card-title">{detail.title}</h5>
-                  <p className="card-text">
-                    Precio: ${detail.price.toFixed(2)}
-                  </p>                  
-                  <AddToCartButton />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      
-    </>
+      </Card>
+    </div>
   );
 };
 

@@ -8,6 +8,7 @@ import Carrusel from "./pages/CarruselDeProductos";
 import Productos from "./components/Getdata/Productos";
 import DetalleProducto from "./pages/DetalleProducto";
 import { CartProvider } from "./contexts/CartContext";
+import Detallecarrito from "./pages/Detallecarrito";
 
 
 
@@ -25,6 +26,7 @@ function App() {
         <Route path="/productos" element={<Productos />} />
         <Route path="/productos/:categoria" element={<Productos />} /> 
         <Route path="/DetalleProducto/:productid" element={<DetalleProducto />} />
+        <Route path="/carrito" element={<Detallecarrito />} /> 
       </Routes>
     </Router>
     </CartProvider>

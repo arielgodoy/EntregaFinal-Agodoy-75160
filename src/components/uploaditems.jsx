@@ -1,4 +1,3 @@
-import React from "react";
 import { uploadItems } from "../utils/uploadItems.js";
 
 const UploadButton = () => {

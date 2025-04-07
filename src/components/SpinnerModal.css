@@ -1,0 +1,31 @@
+/* Estilos para el contenedor del logo */
+.logo-container {
+    display: flex;
+    flex-direction: column; /* Cambia la dirección a vertical */
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+}
+
+/* Estilos y animación para el logo */
+.flipping-logo {
+    width: 100px; /* Ajusta el tamaño según tu necesidad */
+    height: 100px;
+    animation: flip 1.5s infinite ease-in-out; /* Volteo durante 2 segundos de forma infinita */
+}
+
+/* Keyframes para la animación de volteo */
+@keyframes flip {
+    0% {
+        transform: rotateY(0deg); /* Sin volteo */
+    }
+    100% {
+        transform: rotateY(180deg); /* Volteo completo */
+    }
+}
+
+/* Estilos para el texto "Cargando datos" */
+.loading-text {
+    margin-top: 10px; /* Espacio superior para separar el texto del logo */
+    font-weight: bold;
+}
