@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import LeeProducto from "./LeeProducto";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../utils/firebase";
+import SpinnerModal from "../SpinnerModal";
 const Productos = () => {
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,16 +42,10 @@ const Productos = () => {
 
   if (loading) {
     return (
-      <div className="d-flex justify-content-center mt-5">
-        <div
-          className="spinner-border text-primary"
-          role="status"
-          style={{ width: "5rem", height: "5rem", borderWidth: "5px" }}
-        >
-          <span className="visually-hidden">Cargando...</span>
-        </div>
-      </div>
-    );
+      <>
+      <SpinnerModal />
+    </>
+    )
   }
 
   if (error) return <h2 className="text-danger">{error}</h2>;
