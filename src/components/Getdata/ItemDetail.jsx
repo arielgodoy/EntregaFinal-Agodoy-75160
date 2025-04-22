@@ -1,15 +1,11 @@
 import { useEffect, useState, useContext } from "react";
 import { useParams } from "react-router-dom";
-import CartContext from "../contexts/CartContext";
+import CartContext from "../../contexts/CartContext";
 import { Button, Row, Col, Card } from "react-bootstrap";
 
 import { collection, query, where, getDocs } from "firebase/firestore";
-import { db } from "../utils/firebase"; // Ajusta esta ruta según donde inicialices tu Firestore
-import SpinnerModal from "../components/SpinnerModal";
-
-
-
-
+import { db } from "../../utils/firebase"; // Ajusta esta ruta según donde inicialices tu Firestore
+import SpinnerModal from "../SpinnerModal";
 
 const DetalleProducto = () => {
   const { agregarAlCarrito } = useContext(CartContext);
@@ -30,6 +26,7 @@ const DetalleProducto = () => {
 
   const handleAgregar = () => {
     agregarAlCarrito(detail, cantidad);
+    setCantidad(1);
   };
 
   useEffect(() => {
@@ -69,6 +66,7 @@ const DetalleProducto = () => {
   <Card.Title>{detail.title}</Card.Title>
   <Card.Text>{detail.description}</Card.Text>
   <h3 className="card-text">Precio: ${detail.price.toFixed(2)}</h3>
+  <h3 className="card-text">Stock : {detail.stock}</h3>
   
   <Row className="justify-content-center align-items-center">
     <Col>

@@ -1,28 +1,71 @@
 import { useContext, useState } from "react";
-import { Container, Row, Col, Card, Button, Modal } from "react-bootstrap";
-import CartContext from "../contexts/CartContext";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Modal,
+  Form
+} from "react-bootstrap";
+import { db } from "../../utils/firebase";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  updateDoc
+} from "firebase/firestore";
+import CartContext from "../../contexts/CartContext";
 
 const Detallecarrito = () => {
   const [showModal, setShowModal] = useState(false);
+  const [nombre, setNombre] = useState("");
+  const [email, setEmail] = useState("");
 
   const { carrito, precioTotal, vaciarCarrito, cantidadEnCarrito } =
-  useContext(CartContext);
-  
+    useContext(CartContext);
 
   const handleOpenModal = () => {
     setShowModal(true);
   };
 
+  const handleFinalizarCompra = async () => {
+    try {
+      const orden = {
+        comprador: { nombre, email },
+        items: carrito,
+        total: precioTotal(),
+        fecha: new Date()
+      };
 
+      const ordenRef = await addDoc(collection(db, "ordenes"), orden);
 
-  const handleVaciaCarrito = () => {
-    setShowModal(false); 
-    vaciarCarrito({});    
-    window.location.reload(); 
+      for (const item of carrito) {
+        const productoRef = doc(db, "items", item.id.toString());
+        const productoSnap = await getDoc(productoRef);
+
+        if (productoSnap.exists()) {
+          const stockActual = productoSnap.data().stock; //actusalizamos el stock actual por si cambio mientras el usuario estaba viendo el carrito
+          const nuevoStock = stockActual - item.cantidad; // restamos al stock actual la cantidad comprada
+
+          if (nuevoStock >= 0) {
+            await updateDoc(productoRef, { stock: nuevoStock });
+          } else {
+            alert(`❌ No hay stock suficiente para el producto: ${item.id}`);
+            return;
+          }
+        }
+      }
+
+      alert(`✅ Compra realizada. ID de orden: ${ordenRef.id}`);
+      vaciarCarrito();
+      setShowModal(false);
+    } catch (error) {
+      console.error("Error al finalizar la compra:", error);
+      alert("❌ Ocurrió un error al procesar la compra.");
+    }
   };
-
-
-  
 
   return (
     <>
@@ -48,7 +91,6 @@ const Detallecarrito = () => {
                         </div>
                         <hr className="my-4" />
 
-                        {/* Detalles de los productos en el carrito */}
                         <table className="table">
                           <thead>
                             <tr>
@@ -67,14 +109,16 @@ const Detallecarrito = () => {
                                     <img
                                       src={producto.image}
                                       style={{ width: "50px" }}
-                                      alt="Product"
+                                      alt="Producto"
                                     />
                                   </a>
                                 </td>
                                 <td>{producto.description}</td>
                                 <td>{producto.cantidad}</td>
                                 <td>US${producto.price}</td>
-                                <td>US${producto.cantidad * producto.price}</td>
+                                <td>
+                                  US${producto.cantidad * producto.price}
+                                </td>
                               </tr>
                             ))}
                           </tbody>
@@ -103,16 +147,13 @@ const Detallecarrito = () => {
                           <h5>US${precioTotal()}</h5>
                         </div>
 
-                      
-
                         <Button
                           onClick={handleOpenModal}
                           type="button"
                           className="btn btn-dark btn-block btn-lg"
-                          data-mdb-ripple-color="dark"
                         >
-                          Vaciar Carrito
-                        </Button>                        
+                          Finalizar Compra
+                        </Button>
                       </div>
                     </Col>
                   </Row>
@@ -125,15 +166,41 @@ const Detallecarrito = () => {
 
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Confirmar Vaciar Carrito</Modal.Title>
+          <Modal.Title>Finalizar Compra</Modal.Title>
         </Modal.Header>
-        <Modal.Body>¿Estás seguro de que deseas vaciar tu carrito?</Modal.Body>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>Nombre</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Tu nombre"
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Correo electrónico</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="tu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>
             Cancelar
           </Button>
-          <Button variant="primary" onClick={handleVaciaCarrito}>
-            Confirmar
+          <Button
+            variant="primary"
+            onClick={handleFinalizarCompra}
+            disabled={!nombre || !email}
+          >
+            Confirmar Compra
           </Button>
         </Modal.Footer>
       </Modal>

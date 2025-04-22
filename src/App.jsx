@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import ItemListContainer from "./components/ItemListContainer";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Carrusel from "./pages/CarruselDeProductos";
-import Productos from "./components/Getdata/Productos";
-import DetalleProducto from "./pages/DetalleProducto";
+import Productos from "./components/Getdata/ItemList";
+import DetalleProducto from "./components/Getdata/ItemDetail";
 import { CartProvider } from "./contexts/CartContext";
-import Detallecarrito from "./pages/Detallecarrito";
+import Detallecarrito from "./components/Getdata/CheckoutForm";
+import ItemListContainer from "./components/Getdata/ItemListContainer";
 
 
 

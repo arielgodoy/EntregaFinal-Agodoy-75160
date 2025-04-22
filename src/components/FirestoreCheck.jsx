@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../utils/firebase"; // ajusta si tu archivo está en otra ruta
 

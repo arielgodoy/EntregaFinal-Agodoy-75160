@@ -17,6 +17,7 @@ const LeeProducto = ({ producto }) => {
                 <div className="card-body">
                     <h5 className="card-title">{producto.title}</h5>
                     <p className="card-text">Precio: ${producto.price.toFixed(2)}</p>
+                    <p className="card-text">Stock: {producto.stock}</p>
                     <CustomButton onClick={handleClick} className="btn btn-info">
                     Ver Detalle
                     </CustomButton>   
@@ -33,7 +34,8 @@ LeeProducto.propTypes = {
         id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
         image: PropTypes.string.isRequired,
         title: PropTypes.string.isRequired,
-        price: PropTypes.number.isRequired
+        price: PropTypes.number.isRequired,
+        stock: PropTypes.number.isRequired,
     }).isRequired
 };
 
